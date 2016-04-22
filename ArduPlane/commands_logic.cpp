@@ -78,6 +78,18 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         do_altitude_wait(cmd);
         break;
 
+    case MAV_CMD_NAV_DUBIN_LEFT:
+        do_dubin_left(cmd);
+        break;
+
+    case MAV_CMD_NAV_DUBIN_RIGHT:
+        do_dubin_right(cmd);
+        break;
+
+    case MAV_CMD_NAV_DUBIN_STRAIGHT:
+        do_dubin_straight(cmd);
+        break;
+
     // Conditional commands
 
     case MAV_CMD_CONDITION_DELAY:
@@ -244,6 +256,15 @@ bool Plane::verify_command(const AP_Mission::Mission_Command& cmd)        // Ret
     case MAV_CMD_NAV_ALTITUDE_WAIT:
         return verify_altitude_wait(cmd);
 
+    case MAV_CMD_NAV_DUBIN_LEFT:
+         return verify_dubin_left(cmd);
+
+    case MAV_CMD_NAV_DUBIN_RIGHT:
+        return verify_dubin_right(cmd);
+
+    case MAV_CMD_NAV_DUBIN_STRAIGHT:
+        return verify_dubin_straight(cmd);
+
     // Conditional commands
 
     case MAV_CMD_CONDITION_DELAY:
@@ -409,6 +430,23 @@ void Plane::do_loiter_to_alt(const AP_Mission::Mission_Command& cmd)
 
     //must the plane be heading towards the next waypoint before breaking?
     condition_value2 = LOWBYTE(cmd.p1);
+}
+
+//AlexCash
+void Plane::do_dubin_left(const AP_Mission::Mission_Command& cmd)
+{
+    //
+    nav_roll_cd = -roll_limit_cd;
+}
+
+void Plane::do_dubin_right(const AP_Mission::Mission_Command& cmd)
+{
+
+}
+
+void Plane::do_dubin_straight(const AP_Mission::Mission_Command& cmd)
+{
+
 }
 
 /********************************************************************************/
@@ -686,6 +724,34 @@ bool Plane::verify_altitude_wait(const AP_Mission::Mission_Command &cmd)
     }
 
     return false;
+}
+
+//AlexCash
+bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
+{
+
+    // If this is the first run, set the start time in millis
+    if (dubin_segment.start_time_ms == 0) {
+        // Set the start time and end time. Don't really need both, but using for debugging
+        dubin_segment.start_time_ms = millis();
+        dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
+    }
+
+    if (dubin_segment.end_time_ms >= millis()) {
+        return true;
+    } else {
+        return false; //AlexCash
+    }
+}
+
+bool Plane::verify_dubin_right(const AP_Mission::Mission_Command &cmd)
+{
+    return false; //AlexCash
+}
+
+bool Plane::verify_dubin_straight(const AP_Mission::Mission_Command &cmd)
+{
+    return false; //AlexCash
 }
 
 /********************************************************************************/

@@ -541,6 +541,14 @@ private:
         uint32_t time_max_ms;
     } loiter;
 
+    //AlexCash
+    // Struct for dubins turns storage
+    struct {
+        uint32_t duration_ms; // time to be turning left, for example, in milliseconds
+        uint32_t start_time_ms; //Time at which the command started, in milliseconds
+        uint32_t end_time_ms; //Time at which the command should end, in milliseconds
+    }dubin_segment;
+
 
     // Conditional command
     // A value used in condition commands (eg delay, change alt, etc.)
@@ -919,6 +927,14 @@ private:
     uint32_t millis() const;
     uint32_t micros() const;
     void init_capabilities(void);
+
+    //AlexCash
+    void do_dubin_left(const AP_Mission::Mission_Command &cmd);
+    void do_dubin_right(const AP_Mission::Mission_Command &cmd);
+    void do_dubin_straight(const AP_Mission::Mission_Command &cmd);
+    bool verify_dubin_left(const AP_Mission::Mission_Command &cmd);
+    bool verify_dubin_right(const AP_Mission::Mission_Command &cmd);
+    bool verify_dubin_straight(const AP_Mission::Mission_Command &cmd);
 
 public:
     void mavlink_delay_cb();
