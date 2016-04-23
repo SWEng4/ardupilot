@@ -435,18 +435,21 @@ void Plane::do_loiter_to_alt(const AP_Mission::Mission_Command& cmd)
 //AlexCash
 void Plane::do_dubin_left(const AP_Mission::Mission_Command& cmd)
 {
-    //
-    nav_roll_cd = -roll_limit_cd;
+    dubin_segment.duration_ms = cmd.content.dubins.duration_ms;
+    dubin_segment.start_time_ms = 0;
+    //nav_roll_cd = -roll_limit_cd;
 }
 
 void Plane::do_dubin_right(const AP_Mission::Mission_Command& cmd)
 {
-
+    dubin_segment.duration_ms = cmd.content.dubins.duration_ms;
+    dubin_segment.start_time_ms = 0;
 }
 
 void Plane::do_dubin_straight(const AP_Mission::Mission_Command& cmd)
 {
-
+    dubin_segment.duration_ms = cmd.content.dubins.duration_ms;
+    dubin_segment.start_time_ms = 0;
 }
 
 /********************************************************************************/
@@ -732,12 +735,13 @@ bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
 
     // If this is the first run, set the start time in millis
     if (dubin_segment.start_time_ms == 0) {
+        gcs_send_text_fmt(PSTR("Starting dubin_left with duration %d"), dubin_segment.duration_ms);
         // Set the start time and end time. Don't really need both, but using for debugging
         dubin_segment.start_time_ms = millis();
         dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
     }
 
-    if (dubin_segment.end_time_ms >= millis()) {
+    if (dubin_segment.end_time_ms <= millis()) {
         return true;
     } else {
         return false; //AlexCash
@@ -746,12 +750,36 @@ bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
 
 bool Plane::verify_dubin_right(const AP_Mission::Mission_Command &cmd)
 {
-    return false; //AlexCash
+    // If this is the first run, set the start time in millis
+    if (dubin_segment.start_time_ms == 0) {
+        gcs_send_text_fmt(PSTR("Starting dubin_right with duration %d"), dubin_segment.duration_ms);
+        // Set the start time and end time. Don't really need both, but using for debugging
+        dubin_segment.start_time_ms = millis();
+        dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
+    }
+
+    if (dubin_segment.end_time_ms <= millis()) {
+        return true;
+    } else {
+        return false; //AlexCash
+    }
 }
 
 bool Plane::verify_dubin_straight(const AP_Mission::Mission_Command &cmd)
 {
-    return false; //AlexCash
+    // If this is the first run, set the start time in millis
+    if (dubin_segment.start_time_ms == 0) {
+        gcs_send_text_fmt(PSTR("Starting dubin_straight with duration %d"), dubin_segment.duration_ms);
+        // Set the start time and end time. Don't really need both, but using for debugging
+        dubin_segment.start_time_ms = millis();
+        dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
+    }
+
+    if (dubin_segment.end_time_ms <= millis()) {
+        return true;
+    } else {
+        return false; //AlexCash
+    }
 }
 
 /********************************************************************************/
