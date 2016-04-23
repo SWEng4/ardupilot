@@ -32,6 +32,8 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         auto_state.post_landing_stats = false;
 
         gcs_send_text_fmt(PSTR("Executing nav command ID #%i"),cmd.id);
+
+
     } else {
         gcs_send_text_fmt(PSTR("Executing command ID #%i"),cmd.id);
     }
@@ -78,16 +80,25 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         do_altitude_wait(cmd);
         break;
 
+        //AlexCash
     case MAV_CMD_NAV_DUBIN_LEFT:
-        do_dubin_left(cmd);
+        gcs_send_text_fmt(PSTR("Executing dubin left cmd ID #%i"),cmd.id);
+        gcs_send_text_fmt(PSTR("duration of %d ms"),cmd.content.dubins.duration_ms);
+        //do_dubin_left(cmd);
+        set_mode(DUBINS_LEFT);
         break;
 
     case MAV_CMD_NAV_DUBIN_RIGHT:
-        do_dubin_right(cmd);
+        gcs_send_text_fmt(PSTR("Executing dubin right cmd ID #%i"),cmd.id);
+        gcs_send_text_fmt(PSTR("duration of %d ms"),cmd.content.dubins.duration_ms);
+        //do_dubin_right(cmd);
+        set_mode(DUBINS_RIGHT);
         break;
 
     case MAV_CMD_NAV_DUBIN_STRAIGHT:
-        do_dubin_straight(cmd);
+        gcs_send_text_fmt(PSTR("Executing dubin straight cmd ID #%i"),cmd.id);
+        gcs_send_text_fmt(PSTR("duration of %d ms"),cmd.content.dubins.duration_ms);
+        set_mode(DUBINS_STRAIGHT);
         break;
 
     // Conditional commands
@@ -255,7 +266,7 @@ bool Plane::verify_command(const AP_Mission::Mission_Command& cmd)        // Ret
 
     case MAV_CMD_NAV_ALTITUDE_WAIT:
         return verify_altitude_wait(cmd);
-
+        //AlexCash
     case MAV_CMD_NAV_DUBIN_LEFT:
          return verify_dubin_left(cmd);
 
@@ -299,6 +310,7 @@ bool Plane::verify_command(const AP_Mission::Mission_Command& cmd)        // Ret
         // error message
         if (AP_Mission::is_nav_cmd(cmd)) {
             gcs_send_text_P(SEVERITY_HIGH,PSTR("verify_nav: Invalid or no current Nav cmd"));
+            gcs_send_text_fmt(PSTR("Error with command ID #%i"),cmd.id);
         }else{
         gcs_send_text_P(SEVERITY_HIGH,PSTR("verify_conditon: Invalid or no current Condition cmd"));
     }
@@ -435,18 +447,21 @@ void Plane::do_loiter_to_alt(const AP_Mission::Mission_Command& cmd)
 //AlexCash
 void Plane::do_dubin_left(const AP_Mission::Mission_Command& cmd)
 {
-    //
-    nav_roll_cd = -roll_limit_cd;
+    dubin_segment.start_time_ms = 0;
+    set_mode(DUBINS_LEFT);
+    //nav_roll_cd = -roll_limit_cd;
 }
 
 void Plane::do_dubin_right(const AP_Mission::Mission_Command& cmd)
 {
-
+    dubin_segment.start_time_ms = 0;
+    set_mode(DUBINS_RIGHT);
 }
 
 void Plane::do_dubin_straight(const AP_Mission::Mission_Command& cmd)
 {
-
+    dubin_segment.start_time_ms = 0;
+    set_mode(DUBINS_STRAIGHT);
 }
 
 /********************************************************************************/
@@ -735,9 +750,13 @@ bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
         // Set the start time and end time. Don't really need both, but using for debugging
         dubin_segment.start_time_ms = millis();
         dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
+        gcs_send_text_fmt(PSTR("dub_left start time %d"),dubin_segment.start_time_ms);
     }
 
-    if (dubin_segment.end_time_ms >= millis()) {
+    gcs_send_text_fmt(PSTR("dub_left remaining %d"),(dubin_segment.end_time_ms - millis()));
+
+    if (dubin_segment.end_time_ms <= millis()) {
+        set_mode(AUTO);
         return true;
     } else {
         return false; //AlexCash
@@ -746,12 +765,38 @@ bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
 
 bool Plane::verify_dubin_right(const AP_Mission::Mission_Command &cmd)
 {
-    return false; //AlexCash
+
+    // If this is the first run, set the start time in millis
+    if (dubin_segment.start_time_ms == 0) {
+        // Set the start time and end time. Don't really need both, but using for debugging
+        dubin_segment.start_time_ms = millis();
+        dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
+    }
+
+    if (dubin_segment.end_time_ms <= millis()) {
+        set_mode(AUTO);
+        return true;
+    } else {
+        return false; //AlexCash
+    }
 }
 
 bool Plane::verify_dubin_straight(const AP_Mission::Mission_Command &cmd)
 {
-    return false; //AlexCash
+
+    // If this is the first run, set the start time in millis
+    if (dubin_segment.start_time_ms == 0) {
+        // Set the start time and end time. Don't really need both, but using for debugging
+        dubin_segment.start_time_ms = millis();
+        dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
+    }
+
+    if (dubin_segment.end_time_ms <= millis()) {
+        set_mode(AUTO);
+        return true;
+    } else {
+        return false; //AlexCash
+    }
 }
 
 /********************************************************************************/
@@ -909,7 +954,7 @@ void Plane::log_picture()
 //      we double check that the flight mode is AUTO to avoid the possibility of ap-mission triggering actions while we're not in AUTO mode
 bool Plane::start_command_callback(const AP_Mission::Mission_Command &cmd)
 {
-    if (control_mode == AUTO) {
+    if ((control_mode == AUTO)||(control_mode == DUBINS_LEFT)||(control_mode == DUBINS_RIGHT)||(control_mode == DUBINS_STRAIGHT)) {
         return start_command(cmd);
     }
     return true;
@@ -919,7 +964,10 @@ bool Plane::start_command_callback(const AP_Mission::Mission_Command &cmd)
 //      we double check that the flight mode is AUTO to avoid the possibility of ap-mission triggering actions while we're not in AUTO mode
 bool Plane::verify_command_callback(const AP_Mission::Mission_Command& cmd)
 {
-    if (control_mode == AUTO) {
+    //if (control_mode == (AUTO || DUBINS_LEFT || DUBINS_RIGHT || DUBINS_STRAIGHT)) {
+    if ((control_mode == AUTO)||(control_mode == DUBINS_LEFT)||(control_mode == DUBINS_RIGHT)||(control_mode == DUBINS_STRAIGHT)) {
+        //gcs_send_text_P(SEVERITY_HIGH,PSTR("Verify callback cmd ID #%i"),cmd.id);
+        gcs_send_text_P(SEVERITY_HIGH,PSTR("verify callback being called"));
         bool cmd_complete = verify_command(cmd);
 
         // send message to GCS

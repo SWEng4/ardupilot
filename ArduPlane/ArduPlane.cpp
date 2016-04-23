@@ -691,6 +691,27 @@ void Plane::update_flight_mode(void)
     case INITIALISING:
         // handled elsewhere
         break;
+
+    //AlexCash set up mode updating for new dubins modes
+    case DUBINS_LEFT:
+        //gcs_send_text_fmt(PSTR("Updating dubins left %d"),millis());
+        nav_roll_cd        = -roll_limit_cd;
+        update_load_factor();
+        update_fbwb_speed_height();
+        //TODO pitch?
+        break;
+
+    case DUBINS_RIGHT:
+        nav_roll_cd        = roll_limit_cd;
+        update_load_factor();
+        update_fbwb_speed_height();
+        break;
+
+    case DUBINS_STRAIGHT:
+        nav_roll_cd        = 0; //same as stabilize mode
+        nav_pitch_cd       = 0;
+        break;
+
     }
 }
 
@@ -701,6 +722,9 @@ void Plane::update_navigation()
 
     // distance and bearing calcs only
     switch(control_mode) {
+    case DUBINS_LEFT: //AlexCash
+    case DUBINS_RIGHT:
+    case DUBINS_STRAIGHT:
     case AUTO:
         update_commands();
         break;

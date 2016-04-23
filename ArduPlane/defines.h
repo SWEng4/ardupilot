@@ -63,7 +63,10 @@ enum FlightMode {
     RTL           = 11,
     LOITER        = 12,
     GUIDED        = 15,
-    INITIALISING  = 16
+    INITIALISING  = 16,
+    DUBINS_LEFT   = 17,          //AlexCash define new flight modes
+    DUBINS_RIGHT  = 18,
+    DUBINS_STRAIGHT = 19
 };
 
 // type of stick mixing enabled

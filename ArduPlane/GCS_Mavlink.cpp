@@ -24,6 +24,11 @@ void Plane::send_heartbeat(mavlink_channel_t chan)
     // the APM flight mode and has a well defined meaning in the
     // ArduPlane documentation
     switch (control_mode) {
+    case DUBINS_LEFT:   //AlexCash
+    case DUBINS_RIGHT:
+    case DUBINS_STRAIGHT:
+        base_mode = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+        break;
     case MANUAL:
     case TRAINING:
     case ACRO:
@@ -160,6 +165,9 @@ void Plane::send_extended_status1(mavlink_channel_t chan)
         control_sensors_enabled |= MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL; // 3D angular rate control
         break;
 
+    case DUBINS_LEFT: //AlexCash
+    case DUBINS_RIGHT:
+    case DUBINS_STRAIGHT:
     case STABILIZE:
     case FLY_BY_WIRE_A:
     case AUTOTUNE:

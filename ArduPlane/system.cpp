@@ -334,7 +334,9 @@ void Plane::set_mode(enum FlightMode mode)
         trim_control_surfaces();
 
     // perform any cleanup required for prev flight mode
-    exit_mode(control_mode);
+    if (mode != (DUBINS_LEFT || DUBINS_RIGHT || DUBINS_STRAIGHT)) { //AlexCash
+        exit_mode(control_mode);
+    }
 
     // cancel inverted flight
     auto_state.inverted_flight = false;
@@ -440,6 +442,19 @@ void Plane::set_mode(enum FlightMode mode)
         guided_WP_loc = current_loc;
         set_guided_WP();
         break;
+
+    //AlexCash set up mode setting for new dubins modes
+   case DUBINS_LEFT:
+       auto_throttle_mode = true;
+       break;
+
+   case DUBINS_RIGHT:
+       auto_throttle_mode = true;
+       break;
+
+   case DUBINS_STRAIGHT:
+       auto_throttle_mode = true;
+       break;
     }
 
     // start with throttle suppressed in auto_throttle modes
@@ -474,6 +489,9 @@ bool Plane::mavlink_set_mode(uint8_t mode)
     case AUTO:
     case RTL:
     case LOITER:
+    case DUBINS_LEFT: //AlexCash
+    case DUBINS_RIGHT:
+    case DUBINS_STRAIGHT:
         set_mode((enum FlightMode)mode);
         return true;
     }
@@ -673,6 +691,15 @@ void Plane::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
         break;
     case GUIDED:
         port->print_P(PSTR("Guided"));
+        break;
+    case DUBINS_LEFT:
+        port->print_P(PSTR("Dubins_left"));
+        break;
+    case DUBINS_RIGHT:
+        port->print_P(PSTR("Dubins_right"));
+        break;
+    case DUBINS_STRAIGHT:
+        port->print_P(PSTR("Dubins_straight"));
         break;
     default:
         port->printf_P(PSTR("Mode(%u)"), (unsigned)mode);

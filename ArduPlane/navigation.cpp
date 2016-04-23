@@ -131,7 +131,7 @@ void Plane::update_loiter()
     nav_controller->update_loiter(next_WP_loc, abs(g.loiter_radius), loiter.direction);
 }
 
-/*
+/*SEVERITY_HIGH
   handle CRUISE mode, locking heading to GPS course when we have
   sufficient ground speed, and no aileron or rudder input
  */
@@ -195,7 +195,6 @@ void Plane::update_fbwb_speed_height(void)
     altitude_error_cm = calc_altitude_error_cm();
     
     last_elevator_input = elevator_input;
-    
     calc_throttle();
     calc_nav_pitch();
 }
