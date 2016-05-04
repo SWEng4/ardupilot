@@ -484,12 +484,12 @@ void Plane::handle_auto_mode(void)
 
     switch(nav_cmd_id) {
     case MAV_CMD_NAV_DUBIN_LEFT:
-        nav_roll_cd = -roll_limit_cd;
+        nav_roll_cd = -(roll_limit_cd/2);
         update_load_factor();
         update_fbwb_speed_height();
         break;
     case MAV_CMD_NAV_DUBIN_RIGHT:
-        nav_roll_cd = roll_limit_cd;
+        nav_roll_cd = (roll_limit_cd/1);
         update_load_factor();
         update_fbwb_speed_height();
         break;

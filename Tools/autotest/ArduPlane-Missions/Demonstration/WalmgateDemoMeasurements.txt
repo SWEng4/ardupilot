@@ -1,0 +1,28 @@
+wp 2 is 90 degrees
+
+3 - 4 is 70.3m all 90 degree turns
+RSR: 
+	2814
+	1087
+	2838
+
+
+
+4-5 is vertical
+
+5 -6 is 39.3m. 
+6-7 is 356.38m
+7-5 is 364.03m
+
+angle 567 is 1.713 radians or 98.141 degrees4    ---- 4.57 in console app
+
+wp load ../Tools/autotest/ArduPlane-Missions/Demonstration/DubinsWalmgateDemo.txt
+
+Around point 7...
+	original orientation is 4.57
+	end orientation is 1.71
+
+
+118.35 TOP
+356.34 RIGHT
+359.70 LEFT
