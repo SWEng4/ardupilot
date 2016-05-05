@@ -52,3 +52,16 @@ r = 15^2/(9.8*tan(32.5)) = 36.039... = 36.0 m
 roll limit of 20 degrees, speed 15ms:
 
 r = 15^2/(9.8*tan(20)) = 63.079... = 63.1 m
+
+
+
+
+
+
+roll limit 65 degrees, speed of 10ms:
+
+r = 10^2/(9.8*tan(65)) = 4.758... = 4.8 m
+
+roll limit 32.5, speed 10ms;
+
+r = 10^2/(9.8*tan(32.5)) = 16.017... = 16 m

@@ -489,7 +489,7 @@ void Plane::handle_auto_mode(void)
         update_fbwb_speed_height();
         break;
     case MAV_CMD_NAV_DUBIN_RIGHT:
-        nav_roll_cd = (roll_limit_cd/1);
+        nav_roll_cd = (roll_limit_cd/2);
         update_load_factor();
         update_fbwb_speed_height();
         break;
