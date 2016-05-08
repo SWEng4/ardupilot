@@ -1,0 +1,28 @@
++5ms Wind
+65 roll angle
+20ms speed
+19m radius
+
+WP 2-2:
+	LSL
+		4036
+		1062
+		440
+
+WP 3-4:
+	RSR
+		1492
+		3115
+		1492
+
+WP 5-6:
+	LSL
+		1614
+		1033
+		1238
+
+WP 7-7:
+	LSR
+		5515
+		966
+		2215
