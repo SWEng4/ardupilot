@@ -78,6 +78,10 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         do_altitude_wait(cmd);
         break;
 
+    case MAV_CMD_NAV_DUMMY_WP:          //AlexCash
+        do_dummy_command(cmd);
+        break;
+
     case MAV_CMD_NAV_DUBIN_LEFT:
         do_dubin_left(cmd);
         break;
@@ -256,6 +260,9 @@ bool Plane::verify_command(const AP_Mission::Mission_Command& cmd)        // Ret
     case MAV_CMD_NAV_ALTITUDE_WAIT:
         return verify_altitude_wait(cmd);
 
+    case MAV_CMD_NAV_DUMMY_WP:                  //AlexCash
+        return verify_dummy_command(cmd);
+
     case MAV_CMD_NAV_DUBIN_LEFT:
          return verify_dubin_left(cmd);
 
@@ -433,6 +440,12 @@ void Plane::do_loiter_to_alt(const AP_Mission::Mission_Command& cmd)
 }
 
 //AlexCash
+void Plane::do_dummy_command(const AP_Mission::Mission_Command& cmd)
+{
+    // Don't do anything, just print a message to simulator console
+    gcs_send_text_fmt(PSTR("Received and doing dummy command"));
+}
+
 void Plane::do_dubin_left(const AP_Mission::Mission_Command& cmd)
 {
     dubin_segment.duration_ms = cmd.content.dubins.duration_ms;
@@ -730,6 +743,12 @@ bool Plane::verify_altitude_wait(const AP_Mission::Mission_Command &cmd)
 }
 
 //AlexCash
+bool Plane::verify_dummy_command(const AP_Mission::Mission_Command &cmd)
+{
+    // We dont want the dummy command to do anything
+    return true;
+}
+
 bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
 {
 

@@ -929,9 +929,11 @@ private:
     void init_capabilities(void);
 
     //AlexCash
+    void do_dummy_command(const AP_Mission::Mission_Command &cmd);
     void do_dubin_left(const AP_Mission::Mission_Command &cmd);
     void do_dubin_right(const AP_Mission::Mission_Command &cmd);
     void do_dubin_straight(const AP_Mission::Mission_Command &cmd);
+    bool verify_dummy_command(const AP_Mission::Mission_Command &cmd);
     bool verify_dubin_left(const AP_Mission::Mission_Command &cmd);
     bool verify_dubin_right(const AP_Mission::Mission_Command &cmd);
     bool verify_dubin_straight(const AP_Mission::Mission_Command &cmd);
