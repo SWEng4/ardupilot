@@ -759,7 +759,7 @@ bool Plane::verify_dubin_left(const AP_Mission::Mission_Command &cmd)
         dubin_segment.start_time_ms = millis();
         dubin_segment.end_time_ms = dubin_segment.start_time_ms + cmd.content.dubins.duration_ms;
     }
-
+    // If the system time is past the end time for the command, return true
     if (dubin_segment.end_time_ms <= millis()) {
         return true;
     } else {
