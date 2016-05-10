@@ -1,0 +1,28 @@
+No Wind Mission Plan
+32.5 roll angle
+10ms speed
+16m radius
+
+WP 2-2:
+	RSR
+		6235
+		2335
+		6332
+
+WP 3-4:
+	RSR
+		2513
+		3830
+		2513
+
+WP 5-6:
+	LSL
+		2978
+		778
+		1826
+
+WP 7-7:
+	RSR
+		7276
+		3256
+		7273
